@@ -53,27 +53,71 @@ class Grid():
       self.matrix.append(column)
 
 class Snake():
-  pass
+  def __init__(self, grid):
+    self.grid = grid
+
+    self.body = [(0, 0), (1, 0), (2, 0)]
+    self.length = len(self.body)
+    for (x, y) in self.body:
+      self.grid.matrix[x][y].switch_state(2)
+
+    self.dir = (1, 0)
+
+def move(self):
+  nx, ny = self.body[-1]
+  nx += self.dir[0]
+  ny += self.dir[1] 
+  nx, ny = nx % self.grid.width, ny % self.grid.height
+  tail_x, tail_y = self.body[0]
+  self.grid.matrix[tail_x][tail_y].switch_state[0]
+  self.body.pop(0)
+  self.grid.matrix[nx][ny].switch_state(2)
+  self.body.append((nx, ny))
 
 grid = Grid(25, 25)
 grid.matrix[10][10].switch_state(2)
-#block = Block((50, 50), (0, 0))
-#block.switch_state(2)
+snake = Snake(grid)
 
 #Vars
 clock = pg.time.Clock()
 running = True
+start_moving = False
 
 while running:
   #Limits fps to 30
-  clock.tick(30)
+  clock.tick(3)
+
+  up, down, left, right = False, False, False, False
 
   #Exits on game quit (close tab)
   for event in pg.event.get():
     if event.type == pg.QUIT: 
       running = False
+    if event.type == pg.KEYDOWN:
+      if event.key == pg.K_UP or event.key == pg.K_w:
+        up = True
+      if event.key == pg.K_DOWN or event.key == pg.K_s:
+        down = True
+      if event.key == pg.K_LEFT or event.key == pg.K_a:
+        left = True
+      if event.key == pg.K_RIGHT or event.key == pg.K_d:
+        right = True
 
-  
+  if up or down or left or right:
+    start_moving = True
+
+  if up and snake.dir != (0, 1):
+    snake.dir = (0, -1)
+  if down and snake.dir != (0, -1):
+    snake.dir = (0, 1)
+  if left and snake.dir != (1, 0):
+    snake.dir = (-1, 0)
+  if right and snake.dir != (-1, 0):
+    snake.dir = (1, 0)
+
+  if start_moving:
+    snake.move()
+
   #BG
   screen.fill((255, 255, 255))
   #Objects
